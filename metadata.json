@@ -1,0 +1,6 @@
+{
+  "name": "Radar de Clientes Local",
+  "description": "Prospecção inteligente de empresas locais e diagnóstico de oportunidades digitais com a API Gemini.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

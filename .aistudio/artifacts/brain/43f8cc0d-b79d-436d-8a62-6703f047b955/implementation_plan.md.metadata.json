@@ -1,0 +1,6 @@
+{
+  "summary": "Plano técnico completo e detalhado para o MVP do Radar de Clientes Local. Inclui arquitetura full-stack (Express + React 19), integração segura com a API Gemini no backend com Google Search grounding, CRM Kanban de leads, perfil do negócio com checklist de 14 critérios, pontuação de oportunidade de 0 a 100, gerador de abordagens comerciais (ligação, WhatsApp, e-mail), radar de nichos, importação/exportação CSV e backup local em JSON.",
+  "updatedAt": "2026-10-12T22:25:21.829349572Z",
+  "requestFeedback": true,
+  "userFacing": true
+}
