@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { 
-  Search, 
-  Sparkles, 
-  Filter, 
-  Table, 
-  LayoutGrid, 
-  Globe, 
-  Phone, 
-  ExternalLink, 
-  CheckSquare, 
-  Square, 
-  Download, 
-  BookmarkPlus, 
-  Building2, 
+import {
+  Search,
+  Sparkles,
+  Filter,
+  Table,
+  LayoutGrid,
+  Globe,
+  Phone,
+  ExternalLink,
+  CheckSquare,
+  Square,
+  Download,
+  BookmarkPlus,
+  Building2,
   AlertCircle,
   Loader2,
   Share2,
@@ -408,11 +408,10 @@ export const SearchBusinessesView: React.FC<SearchBusinessesViewProps> = ({
               <button
                 type="button"
                 onClick={() => setFilterNoWebsite(!filterNoWebsite)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer ${
-                  filterNoWebsite
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer ${filterNoWebsite
                     ? 'bg-emerald-100 text-emerald-900 border border-emerald-300 font-semibold'
                     : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'
-                }`}
+                  }`}
               >
                 Sem site identificado
               </button>
@@ -420,11 +419,10 @@ export const SearchBusinessesView: React.FC<SearchBusinessesViewProps> = ({
               <button
                 type="button"
                 onClick={() => setFilterHasPhone(!filterHasPhone)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer ${
-                  filterHasPhone
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer ${filterHasPhone
                     ? 'bg-emerald-100 text-emerald-900 border border-emerald-300 font-semibold'
                     : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100'
-                }`}
+                  }`}
               >
                 Com telefone
               </button>
@@ -469,9 +467,8 @@ export const SearchBusinessesView: React.FC<SearchBusinessesViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setViewMode('table')}
-                  className={`p-1.5 rounded-md transition-colors cursor-pointer ${
-                    viewMode === 'table' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-700'
-                  }`}
+                  className={`p-1.5 rounded-md transition-colors cursor-pointer ${viewMode === 'table' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-700'
+                    }`}
                   title="Visualização em tabela"
                 >
                   <Table className="w-4 h-4" />
@@ -479,9 +476,8 @@ export const SearchBusinessesView: React.FC<SearchBusinessesViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setViewMode('cards')}
-                  className={`p-1.5 rounded-md transition-colors cursor-pointer ${
-                    viewMode === 'cards' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-700'
-                  }`}
+                  className={`p-1.5 rounded-md transition-colors cursor-pointer ${viewMode === 'cards' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-700'
+                    }`}
                   title="Visualização em cartões"
                 >
                   <LayoutGrid className="w-4 h-4" />
@@ -523,9 +519,8 @@ export const SearchBusinessesView: React.FC<SearchBusinessesViewProps> = ({
                       return (
                         <tr
                           key={company.id}
-                          className={`hover:bg-slate-50/70 transition-colors ${
-                            isSelected ? 'bg-emerald-50/40' : ''
-                          }`}
+                          className={`hover:bg-slate-50/70 transition-colors ${isSelected ? 'bg-emerald-50/40' : ''
+                            }`}
                         >
                           <td className="p-3 text-center">
                             <input
@@ -603,13 +598,12 @@ export const SearchBusinessesView: React.FC<SearchBusinessesViewProps> = ({
                           <td className="p-3 text-center">
                             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-mono font-bold text-xs bg-slate-100 text-slate-800 tabular-nums">
                               <span
-                                className={`w-2 h-2 rounded-full ${
-                                  company.opportunityScore >= 75
+                                className={`w-2 h-2 rounded-full ${company.opportunityScore >= 75
                                     ? 'bg-emerald-600'
                                     : company.opportunityScore >= 50
-                                    ? 'bg-amber-500'
-                                    : 'bg-rose-500'
-                                }`}
+                                      ? 'bg-amber-500'
+                                      : 'bg-rose-500'
+                                  }`}
                               />
                               {company.opportunityScore}/100
                             </div>
@@ -653,11 +647,10 @@ export const SearchBusinessesView: React.FC<SearchBusinessesViewProps> = ({
                 return (
                   <div
                     key={company.id}
-                    className={`bg-white rounded-2xl border p-5 flex flex-col justify-between transition-all hover:shadow-xs ${
-                      isSelected
+                    className={`bg-white rounded-2xl border p-5 flex flex-col justify-between transition-all hover:shadow-xs ${isSelected
                         ? 'border-emerald-600 ring-2 ring-emerald-600/10'
                         : 'border-slate-200'
-                    }`}
+                      }`}
                   >
                     <div>
                       {/* Top Header */}
@@ -687,13 +680,12 @@ export const SearchBusinessesView: React.FC<SearchBusinessesViewProps> = ({
                         {/* Score Pill */}
                         <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 font-mono font-bold text-xs tabular-nums text-slate-800">
                           <span
-                            className={`w-2 h-2 rounded-full ${
-                              company.opportunityScore >= 75
+                            className={`w-2 h-2 rounded-full ${company.opportunityScore >= 75
                                 ? 'bg-emerald-600'
                                 : company.opportunityScore >= 50
-                                ? 'bg-amber-500'
-                                : 'bg-rose-500'
-                            }`}
+                                  ? 'bg-amber-500'
+                                  : 'bg-rose-500'
+                              }`}
                           />
                           {company.opportunityScore}
                         </div>

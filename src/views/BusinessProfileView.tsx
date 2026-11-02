@@ -27,7 +27,8 @@ import {
   ArrowLeft,
   Loader2,
   ExternalLink,
-  ChevronDown
+  ChevronDown,
+  Search
 } from 'lucide-react';
 import { Company, LeadStatus, ChecklistItem, ContactLogEntry } from '../types';
 import { storageService } from '../services/storageService';
@@ -48,6 +49,14 @@ export const BusinessProfileView: React.FC<BusinessProfileViewProps> = ({
 }) => {
   // Local editable company state
   const [currentCompany, setCurrentCompany] = useState<Company>(company);
+
+  // Sync internal state whenever the selected company prop changes
+  React.useEffect(() => {
+    setCurrentCompany(company);
+    setNextActionDate(company.nextActionDate || '');
+    setNextActionDesc(company.nextActionDescription || '');
+    setPersonalNotes(company.notes || '');
+  }, [company]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isGeneratingOutreach, setIsGeneratingOutreach] = useState(false);
   const [activeOutreachTab, setActiveOutreachTab] = useState<'phone' | 'whatsapp' | 'email'>('whatsapp');
