@@ -109,6 +109,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   // Clear All Local Data
   const handleConfirmClearAll = () => {
     storageService.clearAllData();
+    setProfile(storageService.getSettings().sellerProfile);
+    setWeights(storageService.getSettings().weights);
+    setDefaultRegion(storageService.getSettings().defaultRegion);
     onRefreshAllData();
     setShowClearConfirm(false);
     onToast('Dados locais apagados com sucesso.', 'info');

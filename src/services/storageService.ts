@@ -261,8 +261,8 @@ export const storageService = {
   getLeads(): Company[] {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.LEADS);
-      if (!data) {
-        // Inicializa com dados demonstrativos iniciais
+      if (data === null) {
+        // Primeira inicializacao: salva os dados demonstrativos
         this.saveLeads(INITIAL_SEED_LEADS);
         return INITIAL_SEED_LEADS;
       }
@@ -548,8 +548,9 @@ export const storageService = {
   },
 
   clearAllData(): void {
-    localStorage.removeItem(STORAGE_KEYS.LEADS);
-    localStorage.removeItem(STORAGE_KEYS.SETTINGS);
+    // Grava array vazio de leads explicitamente para nao recarregar a semente demonstrativa
+    localStorage.setItem(STORAGE_KEYS.LEADS, JSON.stringify([]));
+    localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(DEFAULT_SETTINGS));
     // Limpa caches
     Object.keys(localStorage).forEach(key => {
       if (key.startsWith(STORAGE_KEYS.SEARCH_CACHE)) {
