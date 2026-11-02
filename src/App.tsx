@@ -148,6 +148,7 @@ export default function App() {
               onOpenManualModal={() => setIsManualModalOpen(true)}
               onOpenCsvModal={() => setIsCsvModalOpen(true)}
               onToast={addToast}
+              onRefreshLeads={refreshAllData}
             />
           )}
 

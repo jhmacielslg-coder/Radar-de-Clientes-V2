@@ -30,6 +30,7 @@ interface SearchBusinessesViewProps {
   onOpenManualModal: () => void;
   onOpenCsvModal: () => void;
   onToast: (msg: string, type?: 'success' | 'info' | 'error') => void;
+  onRefreshLeads?: () => void;
 }
 
 export const SearchBusinessesView: React.FC<SearchBusinessesViewProps> = ({
@@ -38,6 +39,7 @@ export const SearchBusinessesView: React.FC<SearchBusinessesViewProps> = ({
   onOpenManualModal,
   onOpenCsvModal,
   onToast,
+  onRefreshLeads,
 }) => {
   const [region, setRegion] = useState(currentRegion);
   const [niche, setNiche] = useState(INITIAL_NICHES[0]);
@@ -105,7 +107,16 @@ export const SearchBusinessesView: React.FC<SearchBusinessesViewProps> = ({
 
       if (res.companies.length > 0) {
         storageService.setSearchCache(cacheKey, res.companies);
-        onToast(`${res.companies.length} empresas identificadas na região!`, 'success');
+        // Salva automaticamente as empresas encontradas nos Leads
+        const added = storageService.batchAddLeads(res.companies);
+        if (onRefreshLeads) {
+          onRefreshLeads();
+        }
+        if (added > 0) {
+          onToast(`${res.companies.length} empresas identificadas e ${added} adicionadas automaticamente aos seus Leads!`, 'success');
+        } else {
+          onToast(`${res.companies.length} empresas identificadas (já existentes em seus Leads).`, 'info');
+        }
       } else {
         onToast('Nenhum resultado com fontes públicas suficientes encontrado.', 'info');
       }
@@ -150,6 +161,9 @@ export const SearchBusinessesView: React.FC<SearchBusinessesViewProps> = ({
     const toSave = searchResults.filter((c) => selectedCompanyIds.has(c.id));
     if (toSave.length === 0) return;
     const addedCount = storageService.batchAddLeads(toSave);
+    if (onRefreshLeads) {
+      onRefreshLeads();
+    }
     onToast(`${addedCount} empresa(s) salva(s) com sucesso em Meus Leads!`, 'success');
     setSelectedCompanyIds(new Set());
   };
@@ -602,14 +616,27 @@ export const SearchBusinessesView: React.FC<SearchBusinessesViewProps> = ({
                           </td>
 
                           <td className="p-3 text-right">
-                            <button
-                              type="button"
-                              onClick={() => onSelectCompany(company)}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors cursor-pointer"
-                            >
-                              <span>Ver Perfil</span>
-                              <ArrowRight className="w-3 h-3" />
-                            </button>
+                            <div className="flex items-center justify-end gap-1.5">
+                              <a
+                                href={`https://www.google.com/search?q=${encodeURIComponent(`${company.name} ${company.city}`)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 px-2 py-1.5 text-xs font-semibold text-blue-700 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors cursor-pointer"
+                                title={`Pesquisar ${company.name} no Google`}
+                              >
+                                <Search className="w-3 h-3 text-blue-600" />
+                                <span>no Google</span>
+                                <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                              </a>
+                              <button
+                                type="button"
+                                onClick={() => onSelectCompany(company)}
+                                className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-900 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition-colors cursor-pointer"
+                              >
+                                <span>Ver Perfil</span>
+                                <ArrowRight className="w-3 h-3" />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -712,9 +739,17 @@ export const SearchBusinessesView: React.FC<SearchBusinessesViewProps> = ({
 
                     {/* Card Footer */}
                     <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                      <span className="text-[11px] text-slate-400 font-medium">
-                        Confiança: {company.scoreConfidence}
-                      </span>
+                      <a
+                        href={`https://www.google.com/search?q=${encodeURIComponent(`${company.name} ${company.city}`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 hover:text-blue-900 bg-blue-50 px-2 py-1 rounded-md border border-blue-200"
+                        title={`Pesquisar ${company.name} no Google`}
+                      >
+                        <Search className="w-3 h-3 text-blue-600" />
+                        <span>no Google</span>
+                        <ExternalLink className="w-2.5 h-2.5 opacity-60" />
+                      </a>
                       <button
                         type="button"
                         onClick={() => onSelectCompany(company)}

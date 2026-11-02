@@ -350,6 +350,18 @@ export const BusinessProfileView: React.FC<BusinessProfileViewProps> = ({
                   <span>Abrir no WhatsApp</span>
                 </a>
               )}
+
+              <a
+                href={`https://www.google.com/search?q=${encodeURIComponent(`${currentCompany.name} ${currentCompany.city}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold text-blue-700 bg-blue-50 border border-blue-200 hover:bg-blue-100 rounded-lg transition-colors shadow-2xs"
+                title={`Pesquisar ${currentCompany.name} no Google`}
+              >
+                <Search className="w-3.5 h-3.5 text-blue-600" />
+                <span>no Google</span>
+                <ExternalLink className="w-3 h-3 opacity-60" />
+              </a>
             </div>
           </div>
 
