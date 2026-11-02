@@ -60,10 +60,19 @@ Retorne EXCLUSIVAMENTE em formato JSON:
 }
 `;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.8-flash',
-      contents: prompt,
-    });
+    let response: any;
+    try {
+      response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
+      });
+    } catch (modelErr: any) {
+      console.warn('Fallback para gemini-2.5-flash-lite em generate-outreach:', modelErr?.message);
+      response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash-lite',
+        contents: prompt,
+      });
+    }
 
     const responseText = response.text || '';
     let outreachDrafts: any = null;

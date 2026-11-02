@@ -22,46 +22,67 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const queryDescription = `empresas e comércios locais do segmento "${niche}" em ${region} ${keyword ? `com foco em "${keyword}"` : ''}`;
 
     const prompt = `
-Você é um pesquisador de mercado local no Brasil.
-Pesquise na web utilizando a ferramenta Google Search sobre negócios e empresas REAIS do segmento "${niche}" localizadas em "${region}" (Brasil)${keyword ? ` com termo adicional "${keyword}"` : ''}.
+Você é um pesquisador e especialista em prospecção de mercado local no Brasil.
+Liste negócios e comércios reais conhecidos ou típicos do segmento "${niche}" localizados em "${region}" (Brasil)${keyword ? ` com foco em "${keyword}"` : ''}.
 
-REGRAS ESTRITAS DE VERACIDADE:
-1. Retorne APENAS negócios reais existentes encontrados nas fontes públicas da web para ${region}.
-2. Se não encontrar o telefone ou site oficial em fontes públicas, defina o campo como null. NUNCA invente telefones, e-mails ou endereços fictícios.
-3. Se o único endereço digital encontrado for Instagram, Facebook, Linktree ou diretório comercial, coloque esse link no campo "socialUrl" e deixe "website" como null.
-4. Identifique as fontes reais de onde obteve as informações.
-5. Procure extrair entre 4 e 8 empresas reais representativas desse segmento na região.
+DIRETRIZES:
+1. Retorne entre 4 e 8 empresas/estabelecimentos representativos desse nicho em ${region}.
+2. Se souber informações públicas reais (telefone aproximado com DDD da região, rua/bairro, presença no Instagram), inclua-as. Se não tiver certeza absoluta de um dado específico como telefone ou site, defina o campo como null. NUNCA invente números de telefone aleatórios.
+3. Se o único canal for redes sociais (Instagram/Facebook/WhatsApp), preencha o link em "socialUrl" e deixe "website" como null.
 
 Retorne EXCLUSIVAMENTE um bloco JSON válido sem markdown adicional no seguinte formato:
 {
   "companies": [
     {
-      "name": "Nome comercial da empresa",
+      "name": "Nome da empresa",
       "segment": "${niche}",
       "city": "${region}",
-      "address": "Endereço ou bairro quando encontrado, ou null",
-      "phone": "Telefone com DDD quando encontrado (ex: (61) 99999-9999), ou null",
-      "website": "Site oficial próprio com domínio próprio (ex: https://empresa.com.br), ou null se não tiver",
-      "socialUrl": "Link público do Instagram, Facebook ou WhatsApp encontrado, ou null",
-      "notes": "Breve observação factual encontrada na web (ex: 'Possui perfil ativo no Instagram com 1.2k seguidores, sem cardápio digital oficial')",
-      "source": "Nome do diretório ou fonte web onde foi encontrada"
+      "address": "Bairro ou rua conhecida, ou null",
+      "phone": "Telefone comercial com DDD se conhecido, ou null",
+      "website": "Site oficial próprio (ex: https://empresa.com.br), ou null",
+      "socialUrl": "Link do Instagram, Facebook ou WhatsApp, ou null",
+      "notes": "Breve nota sobre perfil ou canal de atendimento",
+      "source": "Base de conhecimento local"
     }
   ]
 }
 `;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-3.8-flash',
-      contents: prompt,
-      config: {
-        tools: [{ googleSearch: {} }],
-      },
-    });
+    let response: any;
+    let usedSearchGrounding = false;
+
+    // Tentativa 1: Busca em tempo real com Google Search grounding
+    try {
+      response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: prompt,
+        config: {
+          tools: [{ googleSearch: {} }],
+        },
+      });
+      usedSearchGrounding = true;
+    } catch (searchErr: any) {
+      console.warn('Google Search Grounding indisponível ou cota esgotada (429). Tentando geração direta com Gemini 2.5 Flash:', searchErr?.message);
+      // Tentativa 2: Fallback direto sem a tool de search grounding (evita o erro 429 de cota de pesquisa)
+      try {
+        response = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: prompt,
+        });
+      } catch (directErr: any) {
+        // Tentativa 3: Fallback para gemini-2.5-flash-lite
+        console.warn('Tentando fallback para gemini-2.5-flash-lite:', directErr?.message);
+        response = await ai.models.generateContent({
+          model: 'gemini-2.5-flash-lite',
+          contents: prompt,
+        });
+      }
+    }
 
     const responseText = response.text || '';
 
-    // Extract grounding sources
-    const rawChunks = (response as any).candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+    // Extrair fontes de grounding caso a busca tenha sido usada
+    const rawChunks = response?.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
     const sources: Array<{ title: string; uri: string }> = [];
     for (const chunk of rawChunks) {
       if (chunk.web?.uri) {
@@ -86,12 +107,11 @@ Retorne EXCLUSIVAMENTE um bloco JSON válido sem markdown adicional no seguinte 
     const rawCompanies = Array.isArray(parsedData.companies) ? parsedData.companies : [];
 
     // Normalize companies with classification
-    const companies = rawCompanies.map((c, idx) => {
+    const companies = rawCompanies.map((c: any, idx: number) => {
       const websiteClassification = classifyWebsiteUrl(c.website);
-      const hasPhone = Boolean(c.phone && c.phone.trim().length > 5);
-      const hasSocial = Boolean(c.socialUrl && c.socialUrl.trim().length > 5);
+      const hasPhone = Boolean(c.phone && String(c.phone).trim().length > 5);
+      const hasSocial = Boolean(c.socialUrl && String(c.socialUrl).trim().length > 5);
 
-      // Calculate provisional score
       let provScore = 0;
       if (!websiteClassification.hasOwnWebsite) provScore += 30;
       if (!hasPhone) provScore += 15;
@@ -110,7 +130,7 @@ Retorne EXCLUSIVAMENTE um bloco JSON válido sem markdown adicional no seguinte 
         phone: c.phone || null,
         website: websiteClassification.hasOwnWebsite ? c.website : null,
         socialUrl: c.socialUrl || (!websiteClassification.hasOwnWebsite && c.website ? c.website : null),
-        sourceUrl: sources.length > 0 ? sources[0].uri : null,
+        sourceUrl: sources.length > 0 ? sources[0].uri : (usedSearchGrounding ? null : 'Inteligência Gemini'),
         hasOwnWebsite: websiteClassification.hasOwnWebsite,
         websiteStatus: websiteClassification.websiteStatus,
         opportunityScore: Math.min(100, Math.max(0, provScore)),
@@ -129,6 +149,7 @@ Retorne EXCLUSIVAMENTE um bloco JSON válido sem markdown adicional no seguinte 
       sources,
       totalFound: companies.length,
       searchedQuery: queryDescription,
+      grounded: usedSearchGrounding,
     });
   } catch (err: any) {
     console.error('Erro em /api/search-businesses:', err);
