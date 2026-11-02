@@ -51,7 +51,7 @@ Retorne EXCLUSIVAMENTE um bloco JSON válido sem markdown adicional no seguinte 
 `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-4-argon',
+      model: 'gemini-3.8-flash',
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],

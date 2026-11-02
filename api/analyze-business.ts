@@ -133,7 +133,7 @@ Responda ESTRITAMENTE em formato JSON com esta estrutura:
     }
 
     const response = await ai.models.generateContent({
-      model: 'gemini-4-argon',
+      model: 'gemini-3.8-flash',
       contents: prompt,
       config: geminiConfig,
     });

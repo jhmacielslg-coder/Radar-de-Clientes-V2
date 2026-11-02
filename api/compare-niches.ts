@@ -66,7 +66,7 @@ Retorne EXCLUSIVAMENTE em formato JSON:
 `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-4-argon',
+      model: 'gemini-3.8-flash',
       contents: prompt,
     });
 
