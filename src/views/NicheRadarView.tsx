@@ -383,7 +383,7 @@ export const NicheRadarView: React.FC<NicheRadarViewProps> = ({
             </div>
 
             <p className="text-xs text-slate-600 leading-relaxed">
-              Esta ação enviará os dados comparativos de <b>{selectedNiches.length} nichos</b> na região de <b>{region}</b> para análise estruturada com o modelo <b>Gemini 3.8 Flash</b>.
+              Esta ação enviará os dados comparativos de <b>{selectedNiches.length} nichos</b> na região de <b>{region}</b> para análise estruturada com o modelo <b>Gemini 4 Argon</b>.
             </p>
 
             <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs space-y-1">

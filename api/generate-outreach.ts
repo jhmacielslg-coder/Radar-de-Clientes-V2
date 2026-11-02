@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { ai, getApiKey } from './_utils.js';
+import { createAiClient, resolveApiKey } from './_utils.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -7,12 +7,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const apiKey = getApiKey();
+    const { company, sellerProfile, analysis, tone, apiKey: clientApiKey } = req.body;
+    const apiKey = resolveApiKey(clientApiKey);
     if (!apiKey) {
-      return res.status(500).json({ error: 'GEMINI_API_KEY não configurada no servidor.' });
+      return res.status(500).json({ error: 'GEMINI_API_KEY não configurada. Acesse Configurações e insira sua chave API.' });
     }
 
-    const { company, sellerProfile, analysis, tone } = req.body;
+    const ai = createAiClient(apiKey);
+
     if (!company || !company.name) {
       return res.status(400).json({ error: 'Dados da empresa incompletos para gerar abordagem.' });
     }
@@ -59,7 +61,7 @@ Retorne EXCLUSIVAMENTE em formato JSON:
 `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-3.8-flash',
+      model: 'gemini-4-argon',
       contents: prompt,
     });
 
@@ -96,4 +98,3 @@ Retorne EXCLUSIVAMENTE em formato JSON:
     });
   }
 }
-

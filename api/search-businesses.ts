@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { ai, getApiKey, classifyWebsiteUrl } from './_utils.js';
+import { createAiClient, resolveApiKey, classifyWebsiteUrl } from './_utils.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -7,12 +7,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const apiKey = getApiKey();
+    const { region, niche, keyword, targetService, apiKey: clientApiKey } = req.body;
+    const apiKey = resolveApiKey(clientApiKey);
     if (!apiKey) {
-      return res.status(500).json({ error: 'GEMINI_API_KEY não configurada no servidor.' });
+      return res.status(500).json({ error: 'GEMINI_API_KEY não configurada. Acesse Configurações e insira sua chave API.' });
     }
 
-    const { region, niche, keyword, targetService } = req.body;
+    const ai = createAiClient(apiKey);
+
     if (!region || !niche) {
       return res.status(400).json({ error: 'Região e nicho são obrigatórios.' });
     }
@@ -49,7 +51,7 @@ Retorne EXCLUSIVAMENTE um bloco JSON válido sem markdown adicional no seguinte 
 `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-3.8-flash',
+      model: 'gemini-4-argon',
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
@@ -135,4 +137,3 @@ Retorne EXCLUSIVAMENTE um bloco JSON válido sem markdown adicional no seguinte 
     });
   }
 }
-

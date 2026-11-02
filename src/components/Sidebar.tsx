@@ -187,10 +187,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="p-4 border-t border-slate-100 bg-slate-50/50">
           <div className="flex items-center gap-2 text-xs text-slate-500 mb-1">
             <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span className="font-medium text-slate-700">API Gemini no Servidor</span>
+            <span className="font-medium text-slate-700">API Gemini 4 Argon</span>
           </div>
           <p className="text-[11px] text-slate-400 leading-relaxed">
-            Pesquisa assistida via Google Search & dados locais protegidos no navegador.
+            Pesquisa assistida via Google Search & chave API configurável nas Configurações.
           </p>
         </div>
       </aside>

@@ -1,18 +1,19 @@
 import { GoogleGenAI } from '@google/genai';
 
-const apiKey = process.env.GEMINI_API_KEY || '';
-
-export const ai = new GoogleGenAI({
-  apiKey,
-  httpOptions: {
-    headers: {
-      'User-Agent': 'aistudio-build',
+export function createAiClient(clientApiKey?: string): GoogleGenAI {
+  const apiKey = clientApiKey || process.env.GEMINI_API_KEY || '';
+  return new GoogleGenAI({
+    apiKey,
+    httpOptions: {
+      headers: {
+        'User-Agent': 'aistudio-build',
+      },
     },
-  },
-});
+  });
+}
 
-export function getApiKey(): string {
-  return apiKey;
+export function resolveApiKey(bodyApiKey?: string): string {
+  return bodyApiKey || process.env.GEMINI_API_KEY || '';
 }
 
 export function classifyWebsiteUrl(url?: string): {
@@ -67,4 +68,3 @@ export function classifyWebsiteUrl(url?: string): {
 
   return { hasOwnWebsite: false, websiteStatus: 'nao_verificado' };
 }
-
