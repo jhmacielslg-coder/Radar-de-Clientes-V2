@@ -135,3 +135,4 @@ Retorne EXCLUSIVAMENTE um bloco JSON válido sem markdown adicional no seguinte 
     });
   }
 }
+

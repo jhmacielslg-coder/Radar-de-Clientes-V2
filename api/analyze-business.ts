@@ -198,3 +198,4 @@ Responda ESTRITAMENTE em formato JSON com esta estrutura:
     });
   }
 }
+

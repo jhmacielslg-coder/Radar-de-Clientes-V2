@@ -67,3 +67,4 @@ export function classifyWebsiteUrl(url?: string): {
 
   return { hasOwnWebsite: false, websiteStatus: 'nao_verificado' };
 }
+
